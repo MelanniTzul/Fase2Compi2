@@ -46,14 +46,22 @@
 
 start
     = line:(directive / section / instruction / comment / mcomment / blank_line)*
+    {
+    	return cst;
+    }
 
 // Directivas en ARM64 v8
 directive
   = _* name:directive_p _* args:(directive_p / label / string / expression)? _* comment? "\n"?
 
-//
+//directivas name
 directive_p
-    = "." directive_name
+    = "." id:directive_name
+    {
+        let idRoot = cst.newNode();
+        newPath(idRoot, 'GlobalSection', [id]);
+        return { id: idRoot, name: id};
+    }
 
 // Nombre de las directivas
 directive_name
@@ -63,6 +71,11 @@ directive_name
 // Secciones
 section
   = _* label:label _* ":" _* comment? "\n"?
+    {
+        let idRoot = cst.newNode();
+        newPath(idRoot, 'GlobalSection', [label]);
+        return { id: idRoot, name: label};
+    }
 
 // Instrucciones en ARM64 v8 
 instruction
