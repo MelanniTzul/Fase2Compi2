@@ -187,7 +187,7 @@ const newDataTable = (id, columns, data) => {
     btnAnalysis = document.getElementById('btn__analysis');
 
 //btnOpen.addEventListener('click', () => openFile(Arm64Editor));
-btnSave.addEventListener('click', () => saveFile("file", "rs", Arm64Editor));
+btnSave.addEventListener('click', () => saveFile("file", "s", Arm64Editor));
 btnClean.addEventListener('click', () => cleanEditor(Arm64Editor,consoleResult));
 btnAnalysis.addEventListener('click', () => analysis());
 
