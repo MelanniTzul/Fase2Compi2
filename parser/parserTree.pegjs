@@ -66,7 +66,7 @@ directive_p
 // Nombre de las directivas
 directive_name
   = "align" / "ascii" / "asciz" / "byte" / "hword" / "word" / "quad" /
-    "data" / "text" / "global" / "section" / "space" / "zero" / "incbin" / "set" / "equ" / "bss"
+    "data" / "text" / "global" / "section" / "space"/ "skip" / "zero" / "incbin" / "set" / "equ" / "bss"
 
 // Secciones
 section
@@ -92,6 +92,7 @@ instruction
     / i:eor_inst     {return i;}
     / i:mov_inst     {return i;}
     / i:mvn_inst     {return i;}
+    / i:msub_inst    {return i;}
     / i:ldr_inst     {return i;}
     / i:ldrb_inst    {return i;}
     / i:ldp_inst     {return i;}
@@ -146,6 +147,11 @@ sub_inst
     = _* "SUB"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
 
     / _* "SUB"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
+
+//Instruccion Multiply and Subtract (MSUB) x5 = (x4 * x3) - x0
+msub_inst "Instruccion MSUB"
+		=_* "MSUB"i _* rd:reg64 _* "," _* src1:mov_source "," _* src2:mov_source"," _* src3:mov_source _* comment? "\n"?
+        /_* "MSUB"i _* rd:reg32 _* "," _* src:mov_source _* comment? "\n"?
 
 // Instrucciones de Multiplicación 64 bits y 32 bits (MUL)
 mul_inst

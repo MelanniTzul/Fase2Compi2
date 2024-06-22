@@ -100,19 +100,19 @@ const analysis = async () => {
     clearQuadTable();
     try {
         // Creando ast auxiliar
-        let ast = new Ast();
+        //let ast = new Ast();
         // Creando entorno global
-        let env = new Environment(null, 'Global');
+        //let env = new Environment(null, 'Global');
         // Creando generador
         let gen = new Generator();
         // Obteniendo árbol
         let result = PEGGY.parse(text);
         // Ejecutando instrucciones
-        RootExecuter(result, ast, env, gen);
+        //RootExecuter(result, ast, env, gen);
         // Generando gráfica
-        generateCst(result.CstTree);
+        //generateCst(result.CstTree);
         // Generando cuádruplos
-        addDataToQuadTable(gen.getQuadruples());
+        //addDataToQuadTable(gen.getQuadruples());
         // Agregando salida válida en consola
         consoleResult.setValue("VALIDO");
     } catch (e) {
@@ -124,6 +124,7 @@ const analysis = async () => {
             }
         } else {
             console.error('Error desconocido:', e);
+            consoleResult.setValue("No VALIDO");
         }
     }
     // ****************** Tiempo final
