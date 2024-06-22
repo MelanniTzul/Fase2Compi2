@@ -43,18 +43,7 @@
   }
 }
 // Iniciamos el análisis sintáctico con la regla inicial "start"
-/*
-Start
-  = gs:GlobalSection _? ds1:DataSection? _? ts:TextSection _? ds2:DataSection? {
-    let dataSectionConcat = []
-    if (ds1 != null) dataSectionConcat = dataSectionConcat.concat(ds1);
-    if (ds2 != null) dataSectionConcat = dataSectionConcat.concat(ds2);
-    // Agregando raiz cst
-    let idRoot = cst.newNode();
-    newPath(idRoot, 'Start', [gs, ds1, ts, ds2]);
-    return new Root(gs, dataSectionConcat, ts, cst);
-}
-*/
+
 start
     = line:(directive / section / instruction / comment / mcomment / blank_line)*
 
@@ -121,7 +110,6 @@ add_inst "Instrucción de Suma"
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['add', rd, 'COMA', src1, 'COMA', src2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'add', rd.name, src1.name, src2.name, null);
     }
 
     / _* "ADD"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
@@ -129,7 +117,6 @@ add_inst "Instrucción de Suma"
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['add', rd, 'COMA', src1, 'COMA', src2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'add', rd.name, src1.name, src2.name, null);
     }
 
 // Instruccions ands
@@ -139,7 +126,6 @@ ands_inst 'Instrucción de ands'
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['ands', rd, 'COMA', rd1, 'COMA', rd2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'ands', rd.name, rd1.name, srd2.name, null);
     }
 
 // Instrucciones de Resta 64 bits y 32 bits (SUB)  
@@ -155,7 +141,6 @@ mul_inst
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['mul', rd, 'COMA', src1, 'COMA', src2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'mul', rd.name, src1.name, src2.name, null);
     }
 
     / _* "MUL"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
@@ -163,7 +148,6 @@ mul_inst
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['mul', rd, 'COMA', src1, 'COMA', src2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'mul', rd.name, src1.name, src2.name, null);
     }
 
 // Instrucciones de División 64 bits y 32 bits (DIV)
@@ -173,14 +157,12 @@ div_inst
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['div', rd, 'COMA', src1, 'COMA', src2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'div', rd.name, src1.name, src2.name, null);
     }
     / _* "DIV"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
     {
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['div', rd, 'COMA', src1, 'COMA', src2]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'div', rd.name, src1.name, src2.name, null);
     }
 
 // Instrucciones de División sin signo 64 bits y 32 bits (UDIV)
@@ -220,7 +202,6 @@ mov_inst "Instrucción MOV"
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Control', ['mov', rd, 'COMA', src]);
-        return new Operation(loc?.line, loc?.column, idRoot, 'Control', 'mov', rd.name, src.name, null,null);
     }
 
 reg64_or_reg32 "Registro de 64 o 32 Bits"

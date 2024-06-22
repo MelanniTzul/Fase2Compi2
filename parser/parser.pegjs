@@ -16,8 +16,9 @@
   }
 }
 
-Start
-  = gs:GlobalSection _? ds1:DataSection? _? ts:TextSection _? ds2:DataSection? {
+start
+  = gs:GlobalSection _? ds1:DataSection? _? ts:TextSection _? ds2:DataSection? 
+  {
     let dataSectionConcat = []
     if (ds1 != null) dataSectionConcat = dataSectionConcat.concat(ds1);
     if (ds2 != null) dataSectionConcat = dataSectionConcat.concat(ds2);
