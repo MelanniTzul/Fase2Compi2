@@ -244,7 +244,9 @@ ldr_source
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* s:shift_op _* i2:immediate _* "]"
 
-    / "[" _* r:reg64 _* "," _* i:immediate _* "," _* e:extend_op _* "]" 
+    / "[" _* r:reg64 _* "," _* i:immediate _* "," _* e:extend_op _* "]"
+     
+    / "[" _* r:mov_source _* "," _* i:mov_source _* "]"
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "]"
  
@@ -277,6 +279,8 @@ str_source
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* s:shift_op _* i2:immediate _* "]"
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* e:extend_op _* "]" 
+
+    / "[" _* r:mov_source _* "," _* i:mov_source _* "]"
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "]"
         {
