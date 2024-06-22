@@ -179,3 +179,22 @@ a.paginate_button.current{
     justify-content: space-around;
     align-items: center;
 }
+.circle-label {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #f44336; /* Color rojo */
+    border-radius: 50%; /* Asegura que sea un círculo */
+    margin-right: 10px; /* Espacio alrededor del círculo */
+}
+
+.circle i {
+    color: white; /* Color del ícono */
+}
