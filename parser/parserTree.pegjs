@@ -32,7 +32,7 @@
   function newPath(idRoot, nameRoot, nodes) {
     cst.addNode(idRoot, nameRoot);
     for (let node of nodes) {
-      if (typeof node !== "string"){
+      if (typeof node !== "string" || typeof nodo !== 'number'){
         cst.addEdge(idRoot, node?.id);
         continue;
       }
@@ -45,10 +45,7 @@
 // Iniciamos el análisis sintáctico con la regla inicial "start"
 
 start
-    = line:(directive / section / instruction / comment / mcomment / blank_line)*
-    {
-    	return cst;
-    }
+    = line:(directive / section / instruction / comment / mcomment / blank_line)* { return cst; }
 
 // Directivas en ARM64 v8
 directive
@@ -245,7 +242,7 @@ ldr_source
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* s:shift_op _* i2:immediate _* "]"
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* e:extend_op _* "]"
-     
+
     / "[" _* r:mov_source _* "," _* i:mov_source _* "]"
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "]"
@@ -391,7 +388,7 @@ reg64 "Registro_64_Bits"
     = "x"i ("30" / [12][0-9] / [0-9])
     {
         let idRoot = cst.newNode(); 
-        newPath(idRoot, 'register', [text()]);
+        newPath(idRoot, 'register64', [text()]);
         return { id: idRoot, name: text() }
     }
     / "SP"i // Stack Pointer
@@ -405,7 +402,7 @@ reg32 "Registro_32_Bits"
     = "w"i ("30" / [12][0-9] / [0-9])
     {
         let idRoot = cst.newNode(); 
-        newPath(idRoot, 'register', [text()]);
+        newPath(idRoot, 'register32', [text()]);
         return { id: idRoot, name: text() }
     }
 // Operando puede ser un registro o un número inmediato
@@ -414,53 +411,35 @@ operand64 "Operandor 64 Bits"
 
     / r:reg64 lp:(_* "," _* shift_op _* immediate)?  // Registro con desplazamiento lógico opcional
   
-    / i:immediate                                     // Valor inmediato                          
+    / i:immediate   {return i;}                                 // Valor inmediato                          
 
 // Operando puede ser un registro o un número inmediato
 operand32 "Operandor 32 Bits"
     = r:reg32 lp:(_* "," _* shift_op _* immediate)?  // Registro con desplazamiento lógico
 
-    / i:immediate                             // Valor inmediato
-
+    / i:immediate {return i;}                             // Valor inmediato
 
 // Definición de desplazamientos
 shift_op "Operador de Desplazamiento"
-    = "LSL"i
-
-    / "LSR"i
-
-    / "ASR"i
+    =  ("LSL"i / "LSR"i / "ASR"i )
 
 // Definición de extensiones
 extend_op "Operador de Extensión"
-    = "UXTB"i
+    = str:( "UXTB"i / "UXTH"i / "UXTW"i  / "UXTX"i / "SXTB"i / "SXTH"i / "SXTW"i  / "SXTX"i ) {return str; }
 
-    / "UXTH"i 
-
-    / "UXTW"i 
-
-    / "UXTX"i
- 
-    / "SXTB"i
-
-    / "SXTH"i
-
-    / "SXTW"i 
-
-    / "SXTX"i
 // condicional 
 cond 'condicional_csel'
   = 'eq'i / 'ne'i / 'gt'i / 'ge'i / 'lt'i / 'le'i / 'hi'i / 'ls'i 
 
 // Definición de valores inmediatos
 immediate "Inmediato"
-    =  "#"? "0b" int:binary_literal {return int;}
+    =  "#"? "0b" int:binary_literal {return int; }
 
-    / "#"? "0x" hex_literal
+    / "#"? "0x" int:hex_literal     {return int; }
 
-    / "#"? int:integer {return int; }
+    / "#"? int:integer              {return int; }
 
-    / "#"? "'" le:letter "'" {return le;}
+    / "#"? "'" le:letter "'"        {return le; }
 
 binary_literal 
   = [01]+ {return parseInt(text(), 2);} // Representa uno o más dígitos binarios

@@ -110,7 +110,8 @@ const analysis = async () => {
         // Ejecutando instrucciones
         //RootExecuter(result, ast, env, gen);
         // Generando gráfica
-        //generateCst(result.CstTree);
+        console.log(result)
+        generateCst(result);
         // Generando cuádruplos
         //addDataToQuadTable(gen.getQuadruples());
         // Agregando salida válida en consola
