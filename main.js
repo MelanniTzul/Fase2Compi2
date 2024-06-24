@@ -210,6 +210,7 @@ function CargarArchivo() {
             Arm64Editor.refresh();
 
             console.log(content);
+            fileInput.value = '';
         };
 
         reader.readAsText(file);
