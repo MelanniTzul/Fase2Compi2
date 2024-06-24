@@ -578,11 +578,11 @@ uxtb_inst 'instruccion uxtb'
 
 // Registros de propósito general 64 bits (limitado a los registros válidos de ARM64)
 reg64 "Registro_64_Bits"
-    = "x"i ("30" / [12][0-9] / [0-9])
+    = i:"x"i ("30" / [12][0-9] / [0-9])
     {
         let idRoot = cst.newNode(); 
         newPath(idRoot, 'register64', [text()]);
-        return { id: idRoot, name: text() }
+        return  i ;
     }
     / "SP"i // Stack Pointer
         

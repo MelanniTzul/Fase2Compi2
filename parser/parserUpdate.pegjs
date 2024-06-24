@@ -1,5 +1,31 @@
 {
+class Cst {
+    constructor() {
+        this.Nodes = [];
+        this.Edges = [];
+        this.idCount = 0;
+    }
 
+    newNode(){
+        let count = this.idCount; 
+        this.idCount++;
+        return `${count}`
+    }
+
+    addNode(id, label){
+        this.Nodes.push({
+            id: id, 
+            label: label,
+        });
+    }
+
+    addEdge(from, to){
+        this.Edges.push({
+            from: from, 
+            to: to,
+        });
+    }
+}
 
   // Creando cst 
   let cst = new Cst();
@@ -17,19 +43,7 @@
     }
   }
 }
-// Iniciamos el análisis sintáctico con la regla inicial "start"
-/*
-Start
-  = gs:GlobalSection _? ds1:DataSection? _? ts:TextSection _? ds2:DataSection? {
-    let dataSectionConcat = []
-    if (ds1 != null) dataSectionConcat = dataSectionConcat.concat(ds1);
-    if (ds2 != null) dataSectionConcat = dataSectionConcat.concat(ds2);
-    // Agregando raiz cst
-    let idRoot = cst.newNode();
-    newPath(idRoot, 'Start', [gs, ds1, ts, ds2]);
-    return new Root(gs, dataSectionConcat, ts, cst);
-}
-*/
+
 start
     = line:(directive / section / instruction / comment / mcomment / blank_line)*
 
@@ -124,7 +138,7 @@ sub_inst 'Instrucción de resta'
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['sub', rd, 'COMA', rd1, 'COMA', rd2]);
         
-        quads.push({ op: "SUB", dest: rd.name, arg1: rd1.name, arg2: rd2.name });
+        //quads.push({ op: "SUB", dest: rd.name, arg1: rd1.name, arg2: rd2.name });
 
         return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'sub', rd.name, rd1.name, rd2.name, null);
     }
@@ -135,7 +149,7 @@ sub_inst 'Instrucción de resta'
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['sub', rd, 'COMA', rd1, 'COMA', rd2]);
         
-        quads.push({ op: "SUB", dest: rd.name, arg1: rd1.name, arg2: rd2.name });
+        //quads.push({ op: "SUB", dest: rd.name, arg1: rd1.name, arg2: rd2.name });
 
         return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'sub', rd.name, rd1.name, rd2.name, null);
     }
@@ -265,9 +279,6 @@ orr_inst 'Instrucción ORR'
         const loc = location()?.start;
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['orr', rd, 'COMA', src1, 'COMA', src2]);
-        
-       // quads.push({ op: "ORR", dest: rd.name, arg1: src1.name, arg2: src2.name });
-
         return new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'orr', rd.name, src1.name, src2.name, null);
     }
 
@@ -902,7 +913,7 @@ cond 'condicional_csel'
 immediate "Inmediato"
     =  "#"? "0b" int:binary_literal {return int;}
 
-    / "#"? "0x" hex_literal
+    / "#"? "0x" hex:hex_literal {return hex}
 
     / "#"? int:integer {return int; }
 
