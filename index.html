@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
         <!-- ============================= MATERIALIZE ============================== -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
         <!-- ============================= MATERIAL ICONS ============================== -->
@@ -37,6 +38,7 @@
         <title>Proyecto Fase 2</title>
         <!-- STYLE -->
         <link rel="stylesheet" href="styles/style.css" type="text/css">
+        
 
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
@@ -57,12 +59,15 @@
                     <div class="nav-wrapper">
                         <ul id="nav-mobile" class="nav__options">
                             <li>
-                                <button class="btn-floating waves-effect waves-circle waves-light   tooltipped" data-position="bottom" data-tooltip="Abrir archivo" id="btn__open">
-                                    <i class="tiny material-icons"> file_open </i>
-                                </button>
+                                <label for="fileInput" class="circle-label tooltipped" data-position="bottom" data-tooltip="Abrir archivo">
+                                    <div class="circle">
+                                        <i class="tiny material-icons">file_open</i>
+                                        <input style="display: none;" type="file" id="fileInput" accept=".s" onchange="CargarArchivo()">
+                                    </div>
+                                </label>
                             </li>
                             <li>
-                                <button class="btn-floating waves-effect waves-circle waves-light   tooltipped" data-position="bottom" data-tooltip="Guardar archivo" id="btn__save">
+                                <button style="margin-top: 8px;"  class="btn-floating waves-effect waves-circle waves-light   tooltipped" data-position="bottom" data-tooltip="Guardar archivo" id="btn__save">
                                     <i class="material-icons"> cloud_download </i>
                                 </button>
                             </li>

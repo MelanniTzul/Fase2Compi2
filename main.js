@@ -25,25 +25,7 @@ function editor(id, language, lineNumbers = true, readOnly = false, styleActiveL
     });
 }
 
-const openFile = async (editor) => {
-    const {value: file} = await Swal.fire({
-        title: 'Select File',
-        input: 'file',
 
-    })
-    if (!file) return
-
-    let reader = new FileReader();
-
-    reader.onload = (e) => {
-        const file = e.target.result;
-        editor.setValue(file);
-    }
-    reader.onerror = (e) => {
-        console.log("Error to read file", e.target.error)
-    }
-    reader.readAsText(file)
-}
 
 const saveFile = async (fileName, extension, editor) => {
     if (!fileName) {
@@ -73,8 +55,9 @@ const download = (name, content) => {
     link.click()
 }
 
-const cleanEditor = (editor) => {
+const cleanEditor = (editor,consola) => {
     editor.setValue("");
+    consola.setValue("");
 }
 
 function isLexicalError(e) {
@@ -110,7 +93,8 @@ const analysis = async () => {
         // Ejecutando instrucciones
         //RootExecuter(result, ast, env, gen);
         // Generando gráfica
-        //generateCst(result.CstTree);
+        console.log(result)
+        generateCst(result);
         // Generando cuádruplos
         //addDataToQuadTable(gen.getQuadruples());
         // Agregando salida válida en consola
@@ -198,13 +182,36 @@ const newDataTable = (id, columns, data) => {
     return result;
 }
 
-const btnOpen = document.getElementById('btn__open'),
+    btnOpen = document.getElementById('btn__open'),
     btnSave = document.getElementById('btn__save'),
     btnClean = document.getElementById('btn__clean'),
     btnShowCst = document.getElementById('btn__showCST'),
     btnAnalysis = document.getElementById('btn__analysis');
 
-btnOpen.addEventListener('click', () => openFile(Arm64Editor));
-btnSave.addEventListener('click', () => saveFile("file", "rs", Arm64Editor));
-btnClean.addEventListener('click', () => cleanEditor(Arm64Editor));
+//btnOpen.addEventListener('click', () => openFile(Arm64Editor));
+btnSave.addEventListener('click', () => saveFile("file", "s", Arm64Editor));
+btnClean.addEventListener('click', () => cleanEditor(Arm64Editor,consoleResult));
 btnAnalysis.addEventListener('click', () => analysis());
+
+function CargarArchivo() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const content = e.target.result;
+            
+            // Establecer el contenido en el editor CodeMirror
+            Arm64Editor.setValue(content);
+
+            // Opcional: Actualizar el número de líneas si es necesario
+            Arm64Editor.refresh();
+
+            console.log(content);
+        };
+
+        reader.readAsText(file);
+    }
+}
