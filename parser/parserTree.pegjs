@@ -309,18 +309,46 @@ ldr_source
     = "=" l:label
 
     / "[" _* r:reg64_or_reg32 _* "," _* r2:reg64_or_reg32 _* "," _* s:shift_op _* i2:immediate _* "]"
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'array', [r, r2, s, i2]);    
+    }
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* s:shift_op _* i2:immediate _* "]"
-
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'array', [r, i, s, i2]);    
+    }
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* e:extend_op _* "]"
-
+   {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'array', [r, i, s, i2]);    
+    }
     / "[" _* r:mov_source _* "," _* i:mov_source _* "]"
-
+    {
+        const loc = location()?.start;
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'array', [r,i]);
+        //return { id: idRoot, name: int }
+    }    
     / "[" _* r:reg64 _* "," _* i:immediate _* "]"
+    {
+        const loc = location()?.start;
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'array', [r,i]);
+        return { id: idRoot, name: [r,i] }
+    }
  
     / "[" _* r:reg64 _* "]"
-
-
+    {
+        const loc = location()?.start;
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'array', [r]);
+        return { id: idRoot, name: [r]}
+    }
 // Instrucción Load Register (LDRB)
 ldrb_inst "Instrucción LDRB"
     = _* "LDRB"i _* rd:reg64 _* "," _* src:ldr_source _* comment? "\n"?
@@ -574,7 +602,7 @@ reg32 "Registro_32_Bits"
 operand64 "Operandor 64 Bits"
     = r:reg64 _* "," _* ep:extend_op                 // Registro con extensión de tamaño
 
-    / r:reg64 lp:(_* "," _* shift_op _* immediate)?  // Registro con desplazamiento lógico opcional
+    / r:reg64 lp:(_* "," _* shift_op _* immediate)?  {return r;}// Registro con desplazamiento lógico opcional
   
     / i:immediate   {return i;}                                 // Valor inmediato                          
 
