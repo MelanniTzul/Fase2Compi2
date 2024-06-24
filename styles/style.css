@@ -1,16 +1,16 @@
-:root{
-    --primary-color     : #0F111A;
-    --secondary-color   : #00010A;
-    --accent-color      : #FF4151;
-    --color-0           : #3B4252;
-    --color-1           : #BF616A;
-    --foreground        : #e5e9f0;
-    --color-2           : #A3BE8C;
-    --color-3           : #EBCB8B;
-    --color-4           : #81A1C1;
-    --color-5           : #B48EAD;
-    --color-6           : #88C0D0;
-    --color-8           : #4C566A;
+:root {
+    --primary-color     : #2C303F;   /* Gris claro */
+    --secondary-color   : #1A1B24;   /* Gris oscuro */
+    --accent-color      : #FF6B7E;   /* Rojo claro */
+    --color-0           : #545D6F;   /* Gris medio */
+    --color-1           : #C28994;   /* Rosa claro */
+    --foreground        : #F0F3F9;   /* Blanco */
+    --color-2           : #BBCAA3;   /* Verde claro */
+    --color-3           : #F2D2A3;   /* Amarillo claro */
+    --color-4           : #9FB9CF;   /* Azul claro */
+    --color-5           : #C6AFC6;   /* Lila claro */
+    --color-6           : #AED8E8;   /* Celeste claro */
+    --color-8           : #7D879C;   /* Gris azulado */
 }
 * {
     padding: 0;
