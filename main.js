@@ -100,19 +100,19 @@ const analysis = async () => {
     clearQuadTable();
     try {
         // Creando ast auxiliar
-        //let ast = new Ast();
+        let ast = new Ast();
         // Creando entorno global
-        //let env = new Environment(null, 'Global');
+        let env = new Environment(null, 'Global');
         // Creando generador
         let gen = new Generator();
         // Obteniendo árbol
         let result = PEGGY.parse(text);
         // Ejecutando instrucciones
-        //RootExecuter(result, ast, env, gen);
+        RootExecuter(result, ast, env, gen);
         // Generando gráfica
-        //generateCst(result.CstTree);
+        generateCst(result.CstTree);
         // Generando cuádruplos
-        //addDataToQuadTable(gen.getQuadruples());
+        addDataToQuadTable(gen.getQuadruples());
         // Agregando salida válida en consola
         consoleResult.setValue("VALIDO");
     } catch (e) {
@@ -204,7 +204,7 @@ const btnOpen = document.getElementById('btn__open'),
     btnShowCst = document.getElementById('btn__showCST'),
     btnAnalysis = document.getElementById('btn__analysis');
 
-btnOpen.addEventListener('click', () => openFile(Arm64Editor));
+//btnOpen.addEventListener('click', () => openFile(Arm64Editor));
 btnSave.addEventListener('click', () => saveFile("file", "rs", Arm64Editor));
 btnClean.addEventListener('click', () => cleanEditor(Arm64Editor));
 btnAnalysis.addEventListener('click', () => analysis());
