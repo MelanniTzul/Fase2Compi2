@@ -36,6 +36,7 @@
         cst.addEdge(idRoot, node?.id);
         continue;
       }
+      console.log(node);
       let newNode = cst.newNode();
       cst.addNode(newNode, node);
       cst.addEdge(idRoot, newNode);
@@ -45,10 +46,7 @@
 // Iniciamos el análisis sintáctico con la regla inicial "start"
 
 start
-    = line:(directive / section / instruction / comment / mcomment / blank_line)*
-    {
-    	return cst;
-    }
+    = line:(directive / section / instruction / comment / mcomment / blank_line)* { return cst; }
 
 // Directivas en ARM64 v8
 directive
@@ -65,8 +63,8 @@ directive_p
 
 // Nombre de las directivas
 directive_name
-  = "align" / "ascii" / "asciz" / "byte" / "hword" / "word" / "quad" /
-    "data" / "text" / "global" / "section" / "space"/ "skip" / "zero" / "incbin" / "set" / "equ" / "bss"
+  = di:("align" / "ascii" / "asciz" / "byte" / "hword" / "word" / "quad" / "data" / "text" / 
+  "global" / "section" / "space"/ "skip" / "zero" / "incbin" / "set" / "equ" / "bss") {return di;}
 
 // Secciones
 section
@@ -102,19 +100,19 @@ instruction
     / i:lsl_inst     {return i;}
     / i:lsr_inst     {return i;}
     / i:asr_inst     {return i;}
-    / i:ror_inst
-    / i:cmp_inst
-    / i:csel_inst
-    / i:cset_inst
-    / i:beq_inst
-    / i:bne_inst
-    / i:bgt_inst
-    / i:blt_inst
-    / i:ble_inst
-    / i:bl_inst
-    / i:b_inst
-    / i:ret_inst
-    / i:svc_inst
+    / i:ror_inst     {return i;}
+    / i:cmp_inst     {return i;}
+    / i:csel_inst    {return i;}
+    / i:cset_inst    {return i;}
+    / i:beq_inst     {return i;}
+    / i:bne_inst     {return i;}
+    / i:bgt_inst     {return i;}
+    / i:blt_inst     {return i;}
+    / i:ble_inst     {return i;}
+    / i:bl_inst      {return i;}
+    / i:b_inst       {return i;}
+    / i:ret_inst     {return i;}
+    / i:svc_inst     {return i;}
 
 
 // Instrucciones Suma 64 bits y 32 bits (ADD)
@@ -145,13 +143,33 @@ ands_inst 'Instrucción de ands'
 // Instrucciones de Resta 64 bits y 32 bits (SUB)  
 sub_inst
     = _* "SUB"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Arithmetic', ['sub', rd, 'COMA', src1, 'COMA', src2]);
+    }
 
     / _* "SUB"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Arithmetic', ['sub', rd, 'COMA', src1, 'COMA', src2]);
+    }
 
 //Instruccion Multiply and Subtract (MSUB) x5 = (x4 * x3) - x0
 msub_inst "Instruccion MSUB"
 		=_* "MSUB"i _* rd:reg64 _* "," _* src1:mov_source "," _* src2:mov_source"," _* src3:mov_source _* comment? "\n"?
-        /_* "MSUB"i _* rd:reg32 _* "," _* src:mov_source _* comment? "\n"?
+        {
+	        const loc = location()?.start;
+    	    const idRoot = cst.newNode();
+        	newPath(idRoot, 'Arithmetic', ['msub', rd, 'COMA', src1, 'COMA', src2, 'COMA', src3]);
+        }
+        /_* "MSUB"i _* rd:reg32 _* "," _* src1:mov_source "," _* src2:mov_source"," _* src3:mov_source _* comment? "\n"?
+        {
+	        const loc = location()?.start;
+    	    const idRoot = cst.newNode();
+        	newPath(idRoot, 'Arithmetic', ['msub', rd, 'COMA', src1, 'COMA', src2, 'COMA', src3]);
+        }
 
 // Instrucciones de Multiplicación 64 bits y 32 bits (MUL)
 mul_inst
@@ -187,32 +205,74 @@ div_inst
 // Instrucciones de División sin signo 64 bits y 32 bits (UDIV)
 udiv_inst
     = _* "UDIV"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Arithmetic', ['udiv', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "UDIV"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Arithmetic', ['udiv', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 
 // Instrucciones de División con signo 64 bits y 32 bits (SDIV)
 sdiv_inst
     = _* "SDIV"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Arithmetic', ['sdiv', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "SDIV"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Arithmetic', ['sdiv', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 
 // Instrucciones AND 64 bits y 32 bits (AND)        
 and_inst
     = _* "AND"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Logic', ['and', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 
     / _* "AND"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Logic', ['and', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 
 // Instrucciones OR 64 bits y 32 bits (ORR)
 orr_inst
     = _* "ORR"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Logic', ['orr', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 
     / _* "ORR"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
 
 // Instrucciones XOR 64 bits y 32 bits (EOR)
 eor_inst
     = _* "EOR"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Logic', ['eor', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "EOR"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'Logic', ['eor', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 
 // Instrucción MOV 64 bits y 32 bits (MOV)
 mov_inst "Instrucción MOV"
@@ -234,45 +294,106 @@ mov_source "Source para MOV"
 //  Instucción Load Register (LDR)
 ldr_inst "Instrucción LDR"
     = _* "LDR"i _* rd:reg64 _* "," _* src:ldr_source _* comment? "\n"?
-
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['ldr', rd, 'COMA', src]);    
+    }
     / _* "LDR"i _* rd:reg32 _* "," _* src:ldr_source _* comment? "\n"?
-
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['ldr', rd, 'COMA', src]);    
+    }
 ldr_source 
     = "=" l:label
 
     / "[" _* r:reg64_or_reg32 _* "," _* r2:reg64_or_reg32 _* "," _* s:shift_op _* i2:immediate _* "]"
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'array', [r, r2, s, i2]);    
+    }
 
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* s:shift_op _* i2:immediate _* "]"
-
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'array', [r, i, s, i2]);    
+    }
     / "[" _* r:reg64 _* "," _* i:immediate _* "," _* e:extend_op _* "]"
-     
+   {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'array', [r, i, s, i2]);    
+    }
     / "[" _* r:mov_source _* "," _* i:mov_source _* "]"
-
+    {
+        const loc = location()?.start;
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'array', [r,i]);
+        //return { id: idRoot, name: int }
+    }    
     / "[" _* r:reg64 _* "," _* i:immediate _* "]"
+    {
+        const loc = location()?.start;
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'array', [r,i]);
+        return { id: idRoot, name: [r,i] }
+    }
  
     / "[" _* r:reg64 _* "]"
-
-
+    {
+        const loc = location()?.start;
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'array', [r]);
+        return { id: idRoot, name: [r]}
+    }
 // Instrucción Load Register (LDRB)
 ldrb_inst "Instrucción LDRB"
     = _* "LDRB"i _* rd:reg64 _* "," _* src:ldr_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['ldrb', rd, 'COMA', src]);    
+    }
     / _* "LDRB"i _* rd:reg32 _* "," _* src:ldr_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['ldrb', rd, 'COMA', src]);    
+    }
 
 // Instrucción Load Pair Register (LDP)
 ldp_inst "Instrucción LDP"
     = _* "LDP"i _* rd:reg64 _* "," _* rd2:reg64 _* "," _* src:ldr_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['ldp', rd, 'COMA', rd2, 'COMA', src]);    
+    }
+    
     / _* "LDP"i _* rd:reg32 _* "," _* rd2:reg32 _* "," _* src:ldr_source _* comment? "\n"?
-
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['ldp', rd, 'COMA', rd2, 'COMA', src]);    
+    }
+    
 // Instrucción Store Register (STR)
 str_inst "Instrucción STR"
     = _* "STR"i _* rd:reg64 _* "," _* src:str_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['str', rd, 'COMA', src]);    
+    }
     / _* "STR"i _* rd:reg32 _* "," _* src:str_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LoadR', ['str', rd, 'COMA', src]);    
+    }
 str_source 
     = "[" _* r:reg64_or_reg32 _* "," _* r2:reg64_or_reg32 _* "," _* s:shift_op _* i2:immediate _* "]"
 
@@ -294,51 +415,115 @@ str_source
 // Instrucción Store Register Byte (STRB)
 strb_inst "Instrucción STRB"
     = _* "STRB"i _* rd:reg64 _* "," _* src:str_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'storeR', ['strb', rd, 'COMA', src]);    
+    }
     / _* "STRB"i _* rd:reg32 _* "," _* src:str_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'storeR', ['strb', rd, 'COMA', src]);    
+    }
 // Instrucción Store Pair Register (STP)
 stp_inst "Instrucción STP"
     = _* "STP"i _* rd:reg64 _* "," _* rd2:reg64 _* "," _* src:str_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'PairR', ['stp', rd2, 'COMA', rd2,'COMA', src]);    
+    }
     / _* "STP"i _* rd:reg32 _* "," _* rd2:reg32 _* "," _* src:str_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'PairR', ['stp', rd2, 'COMA', rd2,'COMA', src]);   
+    }
 // Instrucción Move Not (MVN)
 mvn_inst "Instrucción MVN"
     = _* "MVN"i _* rd:reg64 _* "," _* src:mov_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'movN', ['mvn', rd,'COMA', src]);   
+    }
     / _* "MVN"i _* rd:reg32 _* "," _* src:mov_source _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'movN', ['mvn', rd2, 'COMA', src]);   
+    }
 // Instrucción Logial Shift Left (LSL)
 lsl_inst "Instrucción LSL"
     = _* "LSL"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LogicalShiftLeft', ['lsl', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "LSL"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LogicalShiftLeft', ['lsl', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 // Instrucción Logial Shift Right (LSR)
 lsr_inst "Instrucción LSR"
     = _* "LSR"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LogicalShiftRight', ['lsr', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "LSR"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'LogicalShiftRight', ['lsr', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 // Instrucción Arithmetical Shift Right (ASR)
 asr_inst "Instrucción ASR"
     = _* "ASR"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'ArithmShiftRight', ['asr', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "ASR"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'ArithmShiftRight', ['asr', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 // Instrucción Rotate Right (ROR)
 ror_inst "Instrucción ROR"
     = _* "ROR"i _* rd:reg64 _* "," _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'rotateRight', ['ror', rd, 'COMA', src1, 'COMA', src2]);    
+    }
     / _* "ROR"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'rotateRight', ['ror', rd, 'COMA', src1, 'COMA', src2]);    
+    }
 // Instrucción Compare (CMP)
 cmp_inst "Instrucción CMP"
     = _* "CMP"i _* src1:reg64 _* "," _* src2:operand64 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'compare', ['cmp', src1, 'COMA', src2]);    
+    }
     / _* "CMP"i _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
-
+	{
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'compare', ['cmp', src1, 'COMA', src2]);    
+    }
 // Instrucción registro  (CSEL)
 csel_inst 'Instruccion CSEL'
   = _* 'csel'i _* rn0:reg64_or_reg32 ', '  _* rn1:reg64_or_reg32 ', '  _* rn3:reg64_or_reg32 ', '  cond _* comment? "\n"?
@@ -381,6 +566,11 @@ blt_inst "Instrucción BLT"
 // Instrucción Supervisor Call (SVC)
 svc_inst "Instrucción SVC"
     = _* "SVC"i _* i:immediate _* comment? "\n"?
+    {
+        const loc = location()?.start;
+        const idRoot = cst.newNode();
+        newPath(idRoot, 'supervisor', ['SVC', i]);
+    }
 
 // Instruccion de (UTXB)
 uxtb_inst 'instruccion uxtb' 
@@ -391,7 +581,7 @@ reg64 "Registro_64_Bits"
     = "x"i ("30" / [12][0-9] / [0-9])
     {
         let idRoot = cst.newNode(); 
-        newPath(idRoot, 'register', [text()]);
+        newPath(idRoot, 'register64', [text()]);
         return { id: idRoot, name: text() }
     }
     / "SP"i // Stack Pointer
@@ -405,62 +595,52 @@ reg32 "Registro_32_Bits"
     = "w"i ("30" / [12][0-9] / [0-9])
     {
         let idRoot = cst.newNode(); 
-        newPath(idRoot, 'register', [text()]);
+        newPath(idRoot, 'register32', [text()]);
         return { id: idRoot, name: text() }
     }
 // Operando puede ser un registro o un número inmediato
 operand64 "Operandor 64 Bits"
     = r:reg64 _* "," _* ep:extend_op                 // Registro con extensión de tamaño
 
-    / r:reg64 lp:(_* "," _* shift_op _* immediate)?  // Registro con desplazamiento lógico opcional
+    / r:reg64 lp:(_* "," _* shift_op _* immediate)?  {return r;}// Registro con desplazamiento lógico opcional
   
-    / i:immediate                                     // Valor inmediato                          
+    / i:immediate   {return i;}                                 // Valor inmediato                          
 
 // Operando puede ser un registro o un número inmediato
 operand32 "Operandor 32 Bits"
     = r:reg32 lp:(_* "," _* shift_op _* immediate)?  // Registro con desplazamiento lógico
 
-    / i:immediate                             // Valor inmediato
-
+    / i:immediate {return i;}                             // Valor inmediato
 
 // Definición de desplazamientos
 shift_op "Operador de Desplazamiento"
-    = "LSL"i
-
-    / "LSR"i
-
-    / "ASR"i
+    =  ("LSL"i / "LSR"i / "ASR"i )
 
 // Definición de extensiones
 extend_op "Operador de Extensión"
-    = "UXTB"i
+    = str:( "UXTB"i / "UXTH"i / "UXTW"i  / "UXTX"i / "SXTB"i / "SXTH"i / "SXTW"i  / "SXTX"i ) {return str; }
 
-    / "UXTH"i 
-
-    / "UXTW"i 
-
-    / "UXTX"i
- 
-    / "SXTB"i
-
-    / "SXTH"i
-
-    / "SXTW"i 
-
-    / "SXTX"i
 // condicional 
 cond 'condicional_csel'
   = 'eq'i / 'ne'i / 'gt'i / 'ge'i / 'lt'i / 'le'i / 'hi'i / 'ls'i 
 
 // Definición de valores inmediatos
 immediate "Inmediato"
-    =  "#"? "0b" int:binary_literal {return int;}
+    =  "#"? "0b" int:binary_literal {return int+""; }
 
-    / "#"? "0x" hex_literal
+    / "#"? "0x" int:hex_literal     {return int; }
 
-    / "#"? int:integer {return int; }
+    / "#"? int:integer              
+    {
+        let idRoot = cst.newNode(); 
+        newPath(idRoot, 'inmediate', [int]);
+        return { id: idRoot, name: int }
+    }
 
-    / "#"? "'" le:letter "'" {return le;}
+    / "#"? "'" le:letter "'" 
+    {
+    	return le; 
+    }
 
 binary_literal 
   = [01]+ {return parseInt(text(), 2);} // Representa uno o más dígitos binarios
@@ -484,7 +664,7 @@ label "Etiqueta"
 
 // Número entero
 integer "Numero Entero"
-    = '-'? [0-9]+  {return parseInt(text(), 10);}
+    = '-'? [0-9]+  {return text();}
 
 // Cadena ASCII
 string "Cadena de Texto"
