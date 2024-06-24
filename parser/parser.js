@@ -435,7 +435,12 @@ function peg$parse(input, options) {
   var peg$e148 = peg$otherExpectation("Ignorado");
   var peg$e149 = peg$classExpectation([" ", "\t"], false, false);
 
-  var peg$f0 = function(line) { return cst; };
+  var peg$f0 = function(line) {  
+        let dataSectionConcat = []
+        let idRoot = cst.newNode();
+        newPath(idRoot, 'Start', line);
+        return new Root("global", dataSectionConcat, line, cst);
+    };
   var peg$f1 = function(id) {
         let idRoot = cst.newNode();
         newPath(idRoot, 'GlobalSection', [id]);
@@ -618,7 +623,7 @@ function peg$parse(input, options) {
         // Determina si la fuente es un registro o un inmediato
         const srcName = src.name ? src.name : src.value;
 
-       // return new Operation(loc?.line, loc?.column, idRoot, 'Control', 'mov', rd.name, srcName, null, null);
+        return new Operation(loc?.line, loc?.column, idRoot, 'Control', 'mov', rd.name, srcName, null, null);
     };
   var peg$f62 = function(i) {return i;};
   var peg$f63 = function(i) {return i;};
@@ -10899,6 +10904,54 @@ function peg$parse(input, options) {
   }
 
 
+    class Environment {
+
+    constructor(previous, id) {
+        this.previous = previous;
+        this.id = id;
+        this.tabla = {};
+    }
+
+}
+    class Expression {
+    // Abstract method
+    execute(ast, env, gen) {
+        throw new Error('El método execute() debe ser implementado');
+    }
+}
+    class Root {
+
+    constructor(global, dataSection, textSection, cst) {
+        this.global = global;
+        this.dataSection = dataSection;
+        this.textSection = textSection;
+        this.CstTree = cst;
+    }
+
+}
+class Operation extends Expression {
+
+    constructor(line, col, id, name, inst, op1, op2, op3, op4) {
+        super();
+        this.line = line;
+        this.col = col;
+        this.id = id;
+        this.name = name;
+        this.inst = inst;
+        this.op1 = op1;
+        this.op2 = op2;
+        this.op3 = op3;
+        this.op4 = op4;
+    }
+
+    execute(ast, env, gen) {
+        // Cuádruplos forma temporal 1
+        /* let temp = gen.newTemp();
+        gen.addQuadruple(this.inst, this.op1, this.op2, this.op3, temp); */
+        // Cúadruplos forma arm 2
+        gen.addQuadruple(this.inst, this.op2, this.op3, null, this.op1);
+    }
+}
     class Cst {
     constructor() {
         this.Nodes = [];
