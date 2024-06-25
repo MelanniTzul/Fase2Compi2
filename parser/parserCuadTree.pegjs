@@ -1,4 +1,7 @@
 {
+   
+
+
     class Expression {
     // Abstract method
     execute(ast, env, gen) {
@@ -85,7 +88,7 @@ class Operation extends Expression {
 // Iniciamos el análisis sintáctico con la regla inicial "start"
 
 start
-    = line:(directive / section / instruction / comment / mcomment / blank_line)* {  
+    = (directive / section / line:instruction / comment / mcomment / blank_line)* {  
         let dataSectionConcat = []
         let idRoot = cst.newNode();
         newPath(idRoot, 'Start', line);
