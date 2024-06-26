@@ -1,7 +1,7 @@
 {
    
 
-
+    this.quadruples = [];
     class Expression {
     // Abstract method
     execute(ast, env, gen) {

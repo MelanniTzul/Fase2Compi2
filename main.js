@@ -112,7 +112,7 @@ const analysis = async () => {
         // Generando gráfica
         generateCst(result);
         // Generando cuádruplos
-        addDataToQuadTable(gen.getQuadruples());
+        addDataToQuadTable(result.getCuadruples());
         // Agregando salida válida en consola
         consoleResult.setValue("VALIDO");
     } catch (e) {

@@ -488,8 +488,15 @@ function peg$parse(input, options) {
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['add', rd, 'COMA', src1, 'COMA', src2]);
         let op = new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'add', rd.name, src1.name, src2.name, null);
-        console.log("--------------------------------------------");
-    	console.log(op);
+    	let quad = new Quadruples();
+        // Agregando los valores
+        quad.setOperator("add");
+        quad.setArg1(src1.name);
+        quad.setArg2(src2.name);
+        quad.setResult(rd.name);
+        //cuadruples.push(cuad);
+        console.log(quad);
+
     };
   var peg$f41 = function(rd, src1, src2) {
         const loc = location()?.start;
@@ -10868,6 +10875,10 @@ function peg$parse(input, options) {
   }
 
 
+let cuadruples = [];
+function gerCuadruples(){
+    return cuadruples;
+}
 class Expression {
     // Abstract method
     execute(ast, env, gen) {

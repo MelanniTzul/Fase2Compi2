@@ -1,4 +1,8 @@
 {
+this.cuadruples = [];
+function gerCuadruples(){
+    return this.cuadruples;
+}
 class Expression {
     // Abstract method
     execute(ast, env, gen) {
@@ -162,7 +166,14 @@ add_inst "Instrucción de Suma"
         const idRoot = cst.newNode();
         newPath(idRoot, 'Arithmetic', ['add', rd, 'COMA', src1, 'COMA', src2]);
         let op = new Operation(loc?.line, loc?.column, idRoot, 'Arithmetic', 'add', rd.name, src1.name, src2.name, null);
-    	console.log(op);
+    	let quad = new Quadruples();
+        // Agregando los valores
+        quad.setOperator(add);
+        quad.setArg1(src1.name);
+        quad.setArg2(src2.name);
+        quad.setResult(rd.name);
+        this.cuadruples.push(cuad);
+
     }
 
     / _* "ADD"i _* rd:reg32 _* "," _* src1:reg32 _* "," _* src2:operand32 _* comment? "\n"?
